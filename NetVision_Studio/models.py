@@ -36,16 +36,16 @@ class SyslogEvent(models.Model):
     severity = models.PositiveIntegerField(null=False, blank=False)
 
 class Host(models.Model):
-    MAC = models.CharField(null=False, blank=True, max_lenght=17 unique=True)
-    ip_host = models.GenericIPAddressField(null=False, blank=False) #unique?
+    MAC = models.CharField(null=False, blank=True, max_lenght=17, unique=True)
+    ip_host = models.GenericIPAddressField(null=False, blank=False)
     connected_toInt = models.ForeignKey(Interface, on_delete=models.CASCADE, related_name='int_connectedTo')
     first_seen = models.DateTimeField(auto_now_add=True)
     first_seen = models.DateTimeField(auto_now=True)
 
 class ConfLog(models.Model):
     interface = models.ForeignKey(Interface, on_delete=models.CASCADE, related_name='conf_interface')
-    prev_mode = models.CharField(null=False, blank=False max_length=20)
-    new_mode = models.CharField(null=False, blank=False max_length=20)
-    prev_native = models.CharField(null=False, blank=False max_length=20)
-    new_native = models.CharField(null=False, blank=False max_length=20)
+    prev_mode = models.CharField(null=False, blank=False, max_length=20)
+    new_mode = models.CharField(null=False, blank=False, max_length=20)
+    prev_native = models.CharField(null=False, blank=False, max_length=20)
+    new_native = models.CharField(null=False, blank=False, max_length=20)
     timestamp = models.DateTimeField(auto_now_add=True)
