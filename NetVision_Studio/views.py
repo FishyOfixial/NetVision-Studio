@@ -9,8 +9,11 @@ def multilayer_HTML(request, id):
     }
     return render(request, "SWD.html", context)
 
-def access_HTML(request): 
-    return render(request, 'access.html')
+def access_HTML(request, id): 
+    context = {
+        'id': id
+    }
+    return render(request, 'access.html', context)
 
 def index_HTML(request):
     return render(request, 'index.html')
