@@ -49,7 +49,6 @@ class Vlan(models.Model):
         return f"VLAN {self.vlan_id} - {self.name}"
 
 
-
 class Vlan_IntAssignment(models.Model):
     interface = models.ForeignKey(Interface, on_delete=models.CASCADE, related_name='vlan_assignment')
     vlan = models.ForeignKey(Vlan, on_delete=models.CASCADE)

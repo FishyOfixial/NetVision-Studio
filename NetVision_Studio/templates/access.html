@@ -33,6 +33,7 @@
 
             <form id="config-unica" class="hidden sub-config-section"
             action="" method="POST">
+                {% csrf_token %}
                 <hr>
                 <h4>Interfaz Única</h4>
                 <label>Tipo de interfaz:</label>
@@ -66,6 +67,7 @@
 
             <form id="config-rango" class="hidden sub-config-section"
             action="" method="POST">
+                {% csrf_token %}
                 <hr>
                 <h4>Rango de Interfaces</h4>
                 <label>Tipo de interfaz:</label>

@@ -99,18 +99,16 @@ def switches_status(request):
 
 def change_port_status(request, id):
     if request.method != 'POST': # Si el metodo de carga no es POST, redirigimos a la carga del HTML
-      return redirect('access', id)
+        return redirect('access', id)
 
     type = request.POST.get('tipoIntRango')
     status = request.POST.get('estado')
     start = request.POST.get('intRangInicio')
     end = request.POST.get('intRangFin')
 
-  
-
     for i in range(int(start), int(end)+1):
         interface_name = f"fastEthernet0/{i}"
-        #Verificar que la interfaz existe (Bool)
+        # Verificar que la interfaz existe (Bool)
         interface = get_object_or_404(Interface, device_id=id, name=interface_name)
         interface.state = status
         interface.save()
