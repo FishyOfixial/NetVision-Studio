@@ -1,10 +1,11 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vlan Manager</title>
-    <link rel="stylesheet" href="{% static 'css/base.css' %}">     
+    <link rel="stylesheet" href="{% static 'css/base.css' %}?v=1.0">     
 
 </head>
 <body>
@@ -23,7 +24,7 @@
             <img src="{% static 'resources/switch.png' %}" class="device">
         </div>
         <div id="distribution">
-            <a href="SWD.html"><img src="{% static 'resources/multilayer.png'%}" class="device"></a>
+            <a href="{%static 'templates/SWD.html' %}"><img src="{% static 'resources/multilayer.png'%}" class="device"></a>
             <a href="SWD.html"><img src="{% static 'resources/multilayer.png'%}" class="device"></a>
         </div>
         <div id="accessLayer">
