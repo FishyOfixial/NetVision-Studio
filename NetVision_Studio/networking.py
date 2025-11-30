@@ -92,3 +92,13 @@ def sync_ports(device_id):
             interface.save()
     
     return "Sync completed"  # Regresamos confirmación
+
+def change_on_off(id, interface_name, status): 
+    state = 'shutdown' if status else 'no shutdown'
+    commands = [
+            f"interface {interface_name}",
+            state, 
+            "exit"
+        ]
+
+    return _run_vlan_command(id, commands)
