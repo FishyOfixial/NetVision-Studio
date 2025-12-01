@@ -1,5 +1,5 @@
 import time
-from .models import Device, Vlan, Interface, Host
+from .models import Device, Vlan, Interface, Host, TopologyLink
 from .ssh_client import SSHClient
 from .syslog.utils import *
 
@@ -34,11 +34,12 @@ def create_vlan_ssh(device_id, vlan_id):
 
     create_dhcp(vlan_id)
     configure_hsrp(vlan_id)
+    #add_vlan_to_trunks(vlan_id)
     return _run_vlan_command(device_id, commands)
 
 def create_dhcp(vlan_id):
     vlan = Vlan.objects.get(vlan_id=vlan_id)
-    multilayers = Device.objects.filter(type="multilayer")
+    multilayers = Device.objects.filter(device_type="multilayer")
     
     multilayers = list(multilayers)
     if not multilayers:
@@ -62,7 +63,7 @@ def create_dhcp(vlan_id):
             # Rango exclusivo por multilayer
             f"ip dhcp excluded-address 10.{vlan.vlan_id}.0.{start} 10.{vlan.vlan_id}.0.{end}",
             # IP virtual/HSPR o última IP siempre excluida
-            f"ip dhcp excluded-address 10.{vlan.vlan_id}.0.254"
+            f"ip dhcp excluded-address 10.{vlan.vlan_id}.0.254",
 
             # Crear la pool
             f"ip dhcp pool VLAN{vlan.vlan_id}",
@@ -74,7 +75,7 @@ def create_dhcp(vlan_id):
 
 def configure_hsrp(vlan_id):
     vlan = Vlan.objects.get(vlan_id=vlan_id)
-    multilayers = list(Device.objects.filter(type='multilayer'))
+    multilayers = list(Device.objects.filter(device_type='multilayer'))
 
     multilayers.sort(key=lambda d: d.ip_address)
     ml2 = multilayers[0] # Termina en .2
@@ -117,6 +118,40 @@ def configure_hsrp(vlan_id):
 
     _run_vlan_command(active.pk, commands_active)
     _run_vlan_command(standby.pk, commands_standby)
+
+def add_vlan_to_trunks(vlan_id):
+    vlan = Vlan.objects.get(vlan_id=vlan_id)
+    links = TopologyLink.objects.all()
+
+    for link in links:
+        intA = link.interface_a
+        intB = link.interface_b
+
+        if intA.mode == 'trunk' and intB.mode == 'trunk':
+            sshA = SSHClient(hostname=intA.device.hostname,
+                            ip=intA.device.ip_address,
+                            username=intA.device.username,
+                            password=intA.device.password)
+            sshA.connect()
+            sshA.send_config([
+                f"interface {intA.name}",
+                f"switchport trunk allowed vlan add {vlan_id}"
+            ])
+            sshA.close()
+
+            sshB = SSHClient(
+                hostname=intB.device.hostname,
+                ip=intB.device.ip_address,
+                username=intB.device.username,
+                password=intB.device.password
+            )
+            sshB.connect()
+            sshB.send_config([
+                f"interface {intB.name}",
+                f"switchport trunk allowed vlan add {vlan_id}"
+            ])
+            sshB.close()
+
 
 # Borrar VLAN del dispositivo
 def delete_vlan_ssh(device_id, vlan_id):

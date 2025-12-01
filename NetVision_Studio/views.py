@@ -43,14 +43,15 @@ def delete_vlan(request, id):
         return redirect('multilayer', id)
     
     vlan_id = request.POST.get('numVLANElim') # get() consigue el dato del input con el name='' del html
-    
+    if vlan_id == 2:
+        return redirect('multilayer', id)
     # Conseguir la VLAN de la base de datos
     vlan = get_object_or_404(Vlan, vlan_id=vlan_id)
     # Mandar el comando de eliminacion al multicapa
     delete_vlan_ssh(id, vlan_id)
     # Eliminar la VLAN de la base de datos
     vlan.delete()
-
+    return redirect('multilayer', id)
 
 def assign_vlan(request, id):
     if request.method != 'POST': # Si el metodo de carga no es POST, redirigimos a la carga del HTML
@@ -60,7 +61,8 @@ def assign_vlan(request, id):
     vlan_id = request.POST.get('vlanAcceso')
     start = request.POST.get('intRangInicio')
     end = request.POST.get('intRangFin')
-
+    if vlan_id == 2:
+        return redirect('access', id)
     vlan = get_object_or_404(Vlan, vlan_id=vlan_id)
     device = get_object_or_404(Device, pk=id)
     
