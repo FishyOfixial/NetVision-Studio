@@ -32,8 +32,91 @@ def create_vlan_ssh(device_id, vlan_id):
         "exit"
     ]
 
+    create_dhcp(vlan_id)
+    configure_hsrp(vlan_id)
     return _run_vlan_command(device_id, commands)
 
+def create_dhcp(vlan_id):
+    vlan = Vlan.objects.get(vlan_id=vlan_id)
+    multilayers = Device.objects.filter(type="multilayer")
+    
+    multilayers = list(multilayers)
+    if not multilayers:
+        return
+    
+    network = f"10.{vlan.vlan_id}.0.0"
+    mask = "255.255.255.0"
+    gateway = f"10.{vlan.vlan_id}.0.1"
+
+    ranges = [
+        (1, 127),
+        (128, 254)
+    ]
+
+    for idx, d in enumerate(multilayers):
+        if idx >= 2:
+            break
+
+        start, end = ranges[idx]
+        commands = [
+            # Rango exclusivo por multilayer
+            f"ip dhcp excluded-address 10.{vlan.vlan_id}.0.{start} 10.{vlan.vlan_id}.0.{end}",
+            # IP virtual/HSPR o última IP siempre excluida
+            f"ip dhcp excluded-address 10.{vlan.vlan_id}.0.254"
+
+            # Crear la pool
+            f"ip dhcp pool VLAN{vlan.vlan_id}",
+            f"network {network} {mask}",
+            f"default-router {gateway}",
+        ]
+
+        _run_vlan_command(d.pk, commands)
+
+def configure_hsrp(vlan_id):
+    vlan = Vlan.objects.get(vlan_id=vlan_id)
+    multilayers = list(Device.objects.filter(type='multilayer'))
+
+    multilayers.sort(key=lambda d: d.ip_address)
+    ml2 = multilayers[0] # Termina en .2
+    ml3 = multilayers[1] # Termina en .3
+
+    vip = f"10.{vlan.vlan_id}.0.1"
+    ip_ml2 = f"10.{vlan.vlan_id}.0.2"
+    ip_ml3 = f"10.{vlan.vlan_id}.0.3"
+
+    vlan_num = int(vlan_id)
+    if vlan_num % 2 == 0:
+        active = ml3
+        standby = ml2
+        active_ip = ip_ml3
+        standby_ip = ip_ml2
+    else:
+        active = ml2
+        standby = ml3
+        active_ip = ip_ml2
+        standby_ip = ip_ml3
+
+    ACTIVE_PRIO = 110
+    STANDBY_PRIO = 100
+
+    commands_active = [
+        f"interface vlan {vlan_id}",
+        f" ip address {active_ip} 255.255.255.0",
+        f" standby {vlan_id} ip {vip}",
+        f" standby {vlan_id} priority {ACTIVE_PRIO}",
+        f" standby {vlan_id} preempt",
+    ]
+
+    commands_standby = [
+        f"interface vlan {vlan_id}",
+        f" ip address {standby_ip} 255.255.255.0",
+        f" standby {vlan_id} ip {vip}",
+        f" standby {vlan_id} priority {STANDBY_PRIO}",
+        f" standby {vlan_id} preempt",
+    ]
+
+    _run_vlan_command(active.pk, commands_active)
+    _run_vlan_command(standby.pk, commands_standby)
 
 # Borrar VLAN del dispositivo
 def delete_vlan_ssh(device_id, vlan_id):
