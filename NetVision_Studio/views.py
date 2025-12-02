@@ -5,9 +5,11 @@ from .networking import * # Aqui se mandan los comandos de red por SSH
 
 def multilayer_HTML(request, id):
     interfaces = Interface.objects.filter(device=id)
+    actVlans =Vlan.objects.all()
     context = {
         'id': id,
-        'interfaces': interfaces
+        'interfaces': interfaces,
+        'actVlans': actVlans
     }
     return render(request, "SWD.html", context)
 

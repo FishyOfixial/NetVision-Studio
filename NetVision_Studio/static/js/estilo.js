@@ -120,5 +120,34 @@
         });
     }
 
+const btnPuertos = document.querySelector('button[data-target="#puertos"]');
+const btnVlans = document.querySelector('button[data-target="#vlans"]');
+const panelPuertos = document.getElementById('tab-puertos');
+const panelVlans = document.getElementById('tab-vlans');
+
+// EVENTO PARA MOSTRAR PUERTOS
+btnPuertos.addEventListener('click', () => {
+
+    // Mostrar el panel Puertos
+    panelVlans.classList.add('hidden');
+    panelPuertos.classList.remove('hidden');
+
+    // Actualizar estilos de botones
+    btnVlans.classList.remove('active');
+    btnPuertos.classList.add('active');
+});
+
+// EVENTO PARA MOSTRAR VLANS
+btnVlans.addEventListener('click', () => {
+
+    // Mostrar el panel VLANs
+    panelPuertos.classList.add('hidden');
+    panelVlans.classList.remove('hidden');
+
+    // Actualizar estilos de botones
+    btnPuertos.classList.remove('active');
+    btnVlans.classList.add('active');
+});
+
 
 

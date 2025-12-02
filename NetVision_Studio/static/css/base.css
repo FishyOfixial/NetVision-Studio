@@ -31,7 +31,7 @@ nav a:hover {
 
 #main{
     background-color: white;
-    max-width: 800px;
+    max-width: 65%;
     margin-left: 2rem;
     margin-top: 1rem;
     padding: 2rem;
@@ -165,7 +165,7 @@ label {
 
 #div-console{
     background-color: white;
-    max-width: 400px;
+    max-width: 30%;
     height: 600px;
     padding: 1rem;
     border-radius: 15px;
@@ -226,3 +226,41 @@ main{
     margin: 10px;
     display: inline-block;
 }
+
+.tabs-container {
+    width: 100%;
+}
+
+.tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.tab {
+    padding: 10px 20px;
+    background: #e3edf9;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    color: #0d47a1;
+    transition: 0.2s;
+}
+
+.tab.active {
+    background: #0d47a1;
+    color: white;
+}
+
+.tab:hover {
+    background: #bcd4f6;
+}
+
+.content {
+    background: white;
+    border-radius: 15px;
+    padding: 15px;
+    height: 600px; /* tu altura con scroll */
+}
+

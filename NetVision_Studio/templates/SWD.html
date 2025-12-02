@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Switch Multicapa {{id}}</title>
-    <link rel="stylesheet" href="{% static 'css/base.css' %}?v=1.1">     
+    <link rel="stylesheet" href="{% static 'css/base.css' %}?v=1.2">     
     <script src="{% static 'js/estilo.js' %}" defer></script>
 </head>
 <body>
@@ -143,15 +143,34 @@
         </div>
     </div>
     <div id="div-console">
-        <h2>Configuraciones Actuales de Puertos</h2>
-            {% for interface in interfaces %}
-            {% if interface.state %} 
-                <div class="console-entry">
-                    <h3>Interfaz {{interface.name}} 🟢</h3>
-                    <pre>{% if interface.is_access %} Acceso {% else %} Troncal {% endif %}</pre>
+        <h2>Configuraciones Actuales</h2>
+            <div class="tabs">
+                <button class="tab active" data-target="#puertos">Puertos</button>
+                <button class="tab" data-target="#vlans">VLANs</button>
+            </div>
+
+            <div class="content">
+
+                <div class="tab-panel active" id="tab-puertos">
+                    {% for interface in interfaces %}
+                        {% if interface.state %} 
+                            <div class="console-entry">
+                                <h3>Interfaz {{interface.name}} 🟢</h3>
+                                <pre>{% if interface.is_access %} Acceso {% else %} Troncal {% endif %}</pre>
+                            </div>
+                        {% endif %}
+                    {% endfor %}           
                 </div>
-                {% endif %}
-            {% endfor %}
+
+                <div class="hidden" id="tab-vlans">
+                    {% for vlan in actVlans %}
+                        {% if vlan %}
+                            <h3> VLAN {{ vlan.vlan_id }}, {{ vlan.name }}</h3>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+
+            </div> 
     </div>
 </body>
 </html>
