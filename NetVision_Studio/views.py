@@ -114,18 +114,19 @@ def change_port_status(request, id):
         return redirect('access', id)
 
     type = request.POST.get('tipoIntRango')
-    status = request.POST.get('estado')
+    on = request.POST.get('OnRango')
     start = request.POST.get('intRangInicio')
     end = request.POST.get('intRangFin')
 
+    status = status == 'on'
     for i in range(int(start), int(end)+1):
-        interface_name = f"fastEthernet0/{i}"
-        # Verificar que la interfaz existe (Bool)
-        interface = get_object_or_404(Interface, device_id=id, name=interface_name)
-        interface.state = status
-        interface.save()
+        print(status == 'on')
+        interface_name = f"FastEthernet0/{i}"
 
-    change_port_status_ssh(id, interface_name, status)
+        print(interface_name)
+        change_port_status_ssh(id, interface_name, status)
+
+    return redirect('index')
 
 def prueba(request):
     interfaces = Interface.objects.all()

@@ -67,7 +67,7 @@
             </form>
 
             <form id="config-rango" class="hidden sub-config-section"
-             action="" method="POST">
+            action="{% url 'change_port' id %}" method="POST">
                 {% csrf_token %}
                 <hr>
                 <h4>Rango de Interfaces</h4>

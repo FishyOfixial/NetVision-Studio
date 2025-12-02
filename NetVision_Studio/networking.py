@@ -214,7 +214,8 @@ def sync_ports(device_id):
     return "Sync completed"  # Regresamos confirmación
 
 def change_port_status_ssh(id, interface_name, status): 
-    state = 'shutdown' if status else 'no shutdown'
+    state = 'no shutdown' if status else 'shutdown'
+    print(state)
     commands = [
             f"interface {interface_name}",
             state, 
