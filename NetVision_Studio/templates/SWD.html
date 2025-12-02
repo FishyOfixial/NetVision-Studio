@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Switch Multicapa {{id}}</title>
-    <link rel="stylesheet" href="{% static 'css/base.css' %}?v=1.0">     
+    <link rel="stylesheet" href="{% static 'css/base.css' %}?v=1.1">     
     <script src="{% static 'js/estilo.js' %}" defer></script>
 </head>
 <body>
@@ -144,7 +144,14 @@
     </div>
     <div id="div-console">
         <h2>Configuraciones Actuales de Puertos</h2>
-
+            {% for interface in interfaces %}
+            {% if interface.state %} 
+                <div class="console-entry">
+                    <h3>Interfaz {{interface.name}} 🟢</h3>
+                    <pre>{% if interface.is_access %} Acceso {% else %} Troncal {% endif %}</pre>
+                </div>
+                {% endif %}
+            {% endfor %}
     </div>
 </body>
 </html>

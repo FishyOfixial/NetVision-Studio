@@ -4,8 +4,10 @@ from .models import *
 from .networking import * # Aqui se mandan los comandos de red por SSH
 
 def multilayer_HTML(request, id):
+    interfaces = Interface.objects.filter(device=id)
     context = {
-        'id': id
+        'id': id,
+        'interfaces': interfaces
     }
     return render(request, "SWD.html", context)
 
@@ -127,6 +129,6 @@ def change_port_status(request, id):
 
 def prueba(request):
     interfaces = Interface.objects.all()
-    return render(request, "SWD.html", {'interfaces': interfaces})
+    return render(request, "SWD.html", {'interfaces': interfaces, 'id': 1})
 
 
