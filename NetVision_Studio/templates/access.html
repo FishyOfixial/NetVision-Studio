@@ -66,13 +66,10 @@
             </form>
 
             <form id="config-rango" class="hidden sub-config-section"
-            action="{% url 'assign_vlan' id %}" method="POST">
+            action="{% url 'hub' id %}" method="POST">
                 {% csrf_token %}
                 <hr>
                 <h4>Rango de Interfaces</h4>
-                <label>Tipo de interfaz:</label>
-                <input type="radio" name="tipo" value="IntGigRang" id="giga2"><label for="giga2">Gigabit</label>
-                <input type="radio" name="tipo" value="IntFaRang" id="fast2"><label for="fast2">FastEthernet</label><br><br>
                 <label>Del:</label><input type="number" name="intRangInicio" min="1" max="24" class="input-short" placeholder="1-24 ">
                 <label>Al:</label><input type="number" name="intRangFin" min="1" max="24" class="input-short" placeholder="1-24">
                 

@@ -128,25 +128,13 @@ def delete_vlan_ssh(device_id, vlan_id):
 
     return _run_vlan_command(device_id, commands)
 
-def assign_vlan_ssh(id, interface_name, vlan_id, type):
-    print(id, interface_name, vlan_id, type)
-    if type == 'IntFaRang':
-        commands = [
-            f"interface {interface_name}",
-            "switchport mode access",
-            f"switchport access vlan {vlan_id}",
-            "exit"
-        ]
-    elif type == 'IntTrunkRang':
-        commands = [
-            f"interface {interface_name}",
-            "switchport mode trunk",
-            f"switchport trunk allowed vlan add {vlan_id}",
-            "exit"
-        ]
-    else:
-        raise ValueError("Invalid interface type. Must be 'access' or 'trunk'.")
-
+def assign_vlan_ssh(id, interface_name, vlan_id):
+    commands = [
+        f"interface {interface_name}",
+        "switchport mode access",
+        f"switchport access vlan {vlan_id}",
+        "exit"
+    ]
     return _run_vlan_command(id, commands)
 
 # Sincronizar puertos con la base de datos

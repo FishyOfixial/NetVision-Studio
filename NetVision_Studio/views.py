@@ -58,18 +58,22 @@ def delete_vlan(request, id):
 
 
 def hub_form_access(request, id):
+    start = request.POST.get("intRangInicio")
+    end = request.POST.get("intRangFin")
+    status = request.POST.get("estado")
+    vlan_id = request.POST.get("vlanAcceso")
+
+    if status != None:
+        status = status == 'OnRango' 
+        change_port_status(start, end, status)       
+
+    if vlan_id !=  "":
+        assign_vlan(start, end, vlan_id, id)
+        
     return redirect('access', id)
 
 
-def assign_vlan(id):
-    if request.method != 'POST': # Si el metodo de carga no es POST, redirigimos a la carga del HTML
-        return redirect('access', id)
-
-    type = request.POST.get('tipo')
-    vlan_id = request.POST.get('vlanAcceso')
-    start = request.POST.get('intRangInicio')
-    end = request.POST.get('intRangFin')
-    print(type, vlan_id, start, end)
+def assign_vlan(start, end, vlan_id, id):
 
     if vlan_id == 2 or vlan_id == 1:
         return redirect('access', id)
@@ -90,22 +94,14 @@ def assign_vlan(id):
         )
 
         # Mandar el comando de asignacion via SSH al switch de acceso
-        assign_vlan_ssh(id, interface_name, vlan_id, type)
+        assign_vlan_ssh(id, interface_name, vlan_id)
 
         # Refrescar la IP del host conectado despues del cambio
         refresh_host_for_interface(device, interface)
 
 
-def change_port_status(id):
-    if request.method != 'POST': # Si el metodo de carga no es POST, redirigimos a la carga del HTML
-        return redirect('access', id)
+def change_port_status(status, start, end, id):
 
-    type = request.POST.get('tipoIntRango')
-    on = request.POST.get('OnRango')
-    start = request.POST.get('intRangInicio')
-    end = request.POST.get('intRangFin')
-
-    status = status == 'on'
     for i in range(int(start), int(end)+1):
         print(status == 'on')
         interface_name = f"FastEthernet0/{i}"
