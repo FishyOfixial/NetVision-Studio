@@ -32,15 +32,12 @@
             </div>
 
             <form id="config-unica" class="hidden sub-config-section"
-            action="" method="POST">
+            action="{% url 'hub' id 'unique' %}" method="POST">
                 {% csrf_token %}
                 <hr>
                 <h4>Interfaz Única</h4>
-                <label>Tipo de interfaz:</label>
-                <input type="radio" name="tipo" value="IntGigU" id="giga1"><label for="giga1">Gigabit</label>
-                <input type="radio" name="tipo" value="IntFaU" id="fast1"><label for="fast1">FastEthernet</label>
                 <label class="label-with-margin">Número:</label>
-                <input type="number" name="numInterfaz" min="1" max="24" class="input-short" placeholder="1-24"><br><br>
+                <input type="number" name="numInterfaz" min="5" max="24" class="input-short" placeholder="5-24" required><br><br>
                 
                 <button type="button" id="btn-siguiente-unica">Siguiente</button>
                 <button type="button" class="btn-regresar secondary">Regresar</button>
@@ -52,11 +49,6 @@
                     <input type="radio" name="estado" value ="OnUnica" id="hab-unica"><label for="hab-unica">Habilitar</label>
                     <input type="radio" name="estado" value ="OffUnica" id="des-unica"><label for="des-unica">Deshabilitar</label>
                     
-                    <h4>Modo</h4>
-                    <input type="radio" name="modo" value="AccUnica" id="acc-unica"><label for="acc-unica">Acceso</label>
-                    <input type="radio" name="modo" value="TrunkUnica" id="trunk-unica"><label for="trunk-unica">Troncal</label>
-                    <br><br>
-                    
                     <h4>Acceso a VLAN</h4>
                     <input type="text" name="vlanAcceso" id="vlan-unica" class="input-full-width" placeholder="Número de VLAN"><br><br>
                     <div class="footer-buttons">
@@ -66,12 +58,13 @@
             </form>
 
             <form id="config-rango" class="hidden sub-config-section"
-            action="{% url 'hub' id %}" method="POST">
+            action="{% url 'hub' id 'range' %}" method="POST">
+
                 {% csrf_token %}
                 <hr>
                 <h4>Rango de Interfaces</h4>
-                <label>Del:</label><input type="number" name="intRangInicio" min="1" max="24" class="input-short" placeholder="1-24 ">
-                <label>Al:</label><input type="number" name="intRangFin" min="1" max="24" class="input-short" placeholder="1-24">
+                <label>Del:</label><input type="number" name="intRangInicio" min="5" max="24" class="input-short" placeholder="5-24" required>
+                <label>Al:</label><input type="number" name="intRangFin" min="5" max="24" class="input-short" placeholder="5-24" required>
                 
                 <button type="button" id="btn-siguiente-rango">Siguiente</button>
                 <button type="button" class="btn-regresar secondary">Regresar</button>

@@ -57,18 +57,32 @@ def delete_vlan(request, id):
     return redirect('multilayer', id)
 
 
-def hub_form_access(request, id):
-    start = request.POST.get("intRangInicio")
-    end = request.POST.get("intRangFin")
+def hub_form_access(request, id, mode):
+    if request.method != 'POST':
+        return redirect('access', id)
+    
+    start = end = iface = None
+    if mode == 'range':
+        start = request.POST.get("intRangInicio")
+        end = request.POST.get("intRangFin")
+    elif mode == 'unique':
+        iface = request.POST.get('numInterfaz')
+
     status = request.POST.get("estado")
     vlan_id = request.POST.get("vlanAcceso")
 
-    if status != None:
-        status = status == 'OnRango' 
-        change_port_status(start, end, status)       
+    if status is not None:
+        status = status == 'OnRango'
+        if mode == 'range' and start and end:
+            change_port_status(start, end, status, id)
+        elif mode == 'unique' and iface:
+            change_port_status(iface, iface, status, id)       
 
     if vlan_id !=  "":
-        assign_vlan(start, end, vlan_id, id)
+        if mode == 'range' and start and end:
+            assign_vlan(start, end, vlan_id, id)
+        elif mode == 'unique' and iface:
+            assign_vlan(iface, iface, vlan_id, id)
         
     return redirect('access', id)
 
@@ -109,24 +123,6 @@ def change_port_status(status, start, end, id):
         print(interface_name)
         change_port_status_ssh(id, interface_name, status)
 
-
-def switches_status(request):
-    #Acceder a todos los switches en la base de datos
-    switches = Device.objects.filter(device_type='switch')
-    data = []
-
-    #Acceder a las interfaces de cada switch
-    for d in switches:
-        interfaces = d.interfaces.all()
-        device_data = {
-            'device_id': d.pk,
-            'hostname': d.hostname,
-            'interfaces': [
-                {'name': inter.name, 'state': inter.state} for inter in interfaces
-            ]
-        }
-        data.append(device_data)
-    return JsonResponse(data, safe=False)
 
 def polling_interfaces(request, id):
     interfaces = Interface.objects.select_related('device').filter(device__id=id)

@@ -12,7 +12,7 @@ urlpatterns = [
     path('form/<int:id>/delete-vlan/', views.delete_vlan, name='delete_vlan'),
     path('form/<int:id>/assig-vlan', views.assign_vlan, name='assign_vlan'),
     path('form/<int:id>/change-port-status/', views.change_port_status, name='change_port'),
-    path('form/<int:id>/hub', views.hub_form_access, name = 'hub'),
+    path('form/<int:id>/hub/<str:mode>/', views.hub_form_access, name = 'hub'),
     
     # Polling de JS
     path('poll/interfaces/<int:id>/', views.polling_interfaces, name='polling_interfaces'),
