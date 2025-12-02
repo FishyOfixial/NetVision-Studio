@@ -125,3 +125,8 @@ def change_port_status(request, id):
 
     change_port_status_ssh(id, interface_name, status)
 
+def prueba(request):
+    interfaces = Interface.object.all()
+    return render(request, "SWD.html", {'interfaces': interfaces})
+
+

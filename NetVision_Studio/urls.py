@@ -13,4 +13,5 @@ urlpatterns = [
 
     # Polling de JS
     path('api/switches/status/', views.switches_status, name='switches_status'),
+    path("interfaces/", views.prueba, name = "prueba"),
 ]
