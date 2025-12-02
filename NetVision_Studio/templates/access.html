@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Switch de Acceso {{id}}</title>
-    <link rel="stylesheet" href="{% static 'css/base.css' %}">     
+    <link rel="stylesheet" href="{% static 'css/base.css' %}?v=1.4">     
     <script src="{% static 'js/estilo_sw.js' %}" defer></script>
 </head>
 <body>
@@ -96,6 +96,7 @@
                     <pre>{% if interface.is_access %} Acceso {% else %} Troncal {% endif %}</pre>
                 </div>
             {% endif %}
+        {% endfor %}
     </div>
 </body>
 </html>
