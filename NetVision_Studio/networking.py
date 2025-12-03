@@ -170,13 +170,12 @@ def sync_ports(device_id):
 
 def change_port_status_ssh(id, interface_name, status): 
     state = 'no shutdown' if status else 'shutdown'
-    print(state)
     commands = [
             f"interface {interface_name}",
             state, 
             "exit"
         ]
-
+    
     return _run_vlan_command(id, commands)
 
 def refresh_host_for_interface(device, interface):

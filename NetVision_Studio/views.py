@@ -6,7 +6,7 @@ from .networking import *
 
 def multilayer_HTML(request, id):
     interfaces = Interface.objects.filter(device=id)
-    actVlans = Vlan.objects.all()
+    actVlans = Vlan.objects.all().order_by('vlan_id')
 
     if not interfaces.exists():
         messages.error(request, "No se encontraron interfaces para este dispositivo.")
@@ -40,15 +40,9 @@ def create_vlan(request, id):
     
     vlan_id = request.POST.get('numVLAN')
     vlan_name = request.POST.get('nomVLAN')
-
+    
     if not vlan_id or not vlan_name:
         messages.error(request, "No se recibieron datos para crear la VLAN.")
-        return redirect('multilayer', id)
-
-    try:
-        create_vlan_ssh(id, vlan_id)
-    except Exception:
-        messages.error(request, "No se pudo crear la VLAN en el switch via SSH.")
         return redirect('multilayer', id)
     
     try:
@@ -59,6 +53,13 @@ def create_vlan(request, id):
     except Exception:
         messages.error(request, "Error al crear la VLAN en la base de datos.")
         return redirect('multilayer', id)
+
+    try:
+        create_vlan_ssh(id, vlan_id)
+    except Exception:
+        messages.error(request, "No se pudo crear la VLAN en el switch via SSH.")
+        return redirect('multilayer', id)
+    
 
     messages.success(request, "Operación realizada correctamente.")
     return redirect('multilayer', id)
@@ -101,27 +102,28 @@ def hub_form_access(request, id, mode):
     if request.method != 'POST':
         return redirect('access', id)
     
-    start = end = iface = None
+    start = end = iface = status  = None
 
     if mode == 'range':
         start = request.POST.get("intRangInicio")
         end = request.POST.get("intRangFin")
+        status = request.POST.get('estadoRango')
         if not start or not end:
             messages.error(request, "Datos incompletos para el rango de interfaces.")
             return redirect('access', id)
 
     elif mode == 'unique':
         iface = request.POST.get('numInterfaz')
+        status = request.POST.get('estadoUnico')
         if not iface:
             messages.error(request, "No se recibió la interfaz única.")
             return redirect('access', id)
 
-    status = request.POST.get("estado")
     vlan_id = request.POST.get("vlanAcceso")
 
     if status is not None:
         try:
-            status = status == 'OnRango'
+            status = status == 'On'
             if mode == 'range':
                 change_port_status(request, start, end, status, id)
             elif mode == 'unique':
@@ -186,6 +188,15 @@ def change_port_status(request, start, end, status, id):
             messages.error(request, f"No se pudo cambiar el estado de {interface_name}.")
             return redirect('access', id)
 
+        try:
+            iface = Interface.objects.filter(device_id=id, name=interface_name).first()
+            if iface:
+                iface.state = status
+                iface.save()
+        except Exception:
+            messages.error(request, f"SSH sí funcionó, pero falló al actualizar la DB para {interface_name}.")
+            return redirect('access', id)
+        
     messages.success(request, "Operación realizada correctamente.")
     return
 
