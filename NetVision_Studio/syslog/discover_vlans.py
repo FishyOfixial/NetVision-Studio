@@ -21,17 +21,20 @@ def parse_vlan(output):
 
 def parse_interfaces(output):
     """
-    Parsea 'show interfaces switchport' y devuelve un dict:
-    {interface_name: {'access_vlan': vlan_id, 'native_vlan': vlan_id}}
+    Parsea 'show interfaces switchport' y devuelve:
+    { "Fa0/5": {"access_vlan": 1, "native_vlan": 1} }
     """
     interfaces = {}
     current_int = None
     for line in output.splitlines():
-        # Detecta interfaz
-        int_match = re.match(r"^(\S+) is .*", line)
-        if int_match:
-            current_int = int_match.group(1)
-            interfaces[current_int] = {'access_vlan': None, 'native_vlan': None}
+        
+        name_match = re.match(r"^Name:\s+(\S+)", line)
+        if name_match:
+            current_int = name_match.group(1)
+            interfaces[current_int] = {
+                "access_vlan": None,
+                "native_vlan": None
+            }
             continue
 
         if current_int:
@@ -86,7 +89,7 @@ def sync_vlans():
     print(f"✓ VLANs sincronizadas ({len(vlans)})")
 
     # Ahora sincronizamos las interfaces de cada switch
-    for device in Device.objects.all():
+    for device in Device.objects.filter(device_type='switch'):
         print(f"\nActualizando interfaces en {device.hostname}...")
 
         ssh = SSHClient(
@@ -110,24 +113,25 @@ def sync_vlans():
             if not iface:
                 continue
 
-            # Asignación de Access VLAN
+            # Access VLAN
             if vlans_data['access_vlan']:
                 vlan_obj = Vlan.objects.filter(vlan_id=vlans_data['access_vlan']).first()
                 if vlan_obj:
-                    assignment, _ = Vlan_IntAssignment.objects.update_or_create(
+                    Vlan_IntAssignment.objects.update_or_create(
                         interface=iface,
                         vlan=vlan_obj,
                         defaults={'is_native': False}
                     )
 
-            # Asignación de Native VLAN
+            # Native VLAN
             if vlans_data['native_vlan']:
                 vlan_obj = Vlan.objects.filter(vlan_id=vlans_data['native_vlan']).first()
                 if vlan_obj:
-                    assignment, _ = Vlan_IntAssignment.objects.update_or_create(
+                    Vlan_IntAssignment.objects.update_or_create(
                         interface=iface,
                         vlan=vlan_obj,
                         defaults={'is_native': True}
                     )
+
 
     print("\n✓ Sincronización de interfaces VLAN completada.\n")

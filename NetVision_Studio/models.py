@@ -50,9 +50,11 @@ class Vlan(models.Model):
 class Vlan_IntAssignment(models.Model):
     interface = models.ForeignKey(Interface, on_delete=models.CASCADE, related_name='vlan_assignment')
     vlan = models.ForeignKey(Vlan, on_delete=models.CASCADE)
+    is_native = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.interface} -> VLAN {self.vlan.vlan_id} (Native={self.is_native})"
+
 
 
 class SyslogEvent(models.Model):
